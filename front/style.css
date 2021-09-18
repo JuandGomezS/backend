@@ -1,0 +1,33 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: black;
+    color: aquamarine;
+}
+
+.formulario {
+    border: solid aquamarine 1px;
+    padding: 1rem;
+}
+
+.formulario input {
+    background-color: black;
+    color: aquamarine;
+    border-radius: 1%;
+    border: solid aquamarine 1px;
+}
+
+.formulario .enviar {
+    margin-top: 1rem;
+    background-color: aquamarine;
+    color: black;    
+}
+
+input:-webkit-autofill {
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: aquamarine;
+}

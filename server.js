@@ -1,4 +1,5 @@
-import express from 'express';
+const express = require('express');
+const handlebars = require('express-handlebars');
 
 
 
@@ -8,6 +9,7 @@ const productsRouter = express.Router();
 
 let productos =[];
 let newId= 0;
+
 
 
 
@@ -22,6 +24,19 @@ const server = app.listen(PORT, ()=>{
     console.log('Servidor HTTP escuchando en el puerto', server.address().port);
 });
 server.on('error', error=>console.log('Error en servidor', error));
+
+app.engine(
+    "hbs",
+    handlebars({
+        extname: ".hbs",
+        defaultLayout: "index.hbs",
+        layoutsDir: __dirname + "/views/layouts",
+        partialsDir: __dirname + "/views/partials"
+    })
+);
+
+app.set('views', './views/partials'); // especifica el directorio de vistas
+app.set('view engine', 'hbs'); // registra el motor de plantillas
 
 
 
@@ -39,6 +54,11 @@ productsRouter.get('/productos/listar/:id', (req,res)=>{
     res.json(product? {product, response: '200 OK'}: {object, response: '400 Bad request'});   
 });
 
+productsRouter.get('/productos/vista', function(req, res) {
+    let exist= productos.length>0?true:false;
+    res.render('main', { products: productos, listExists: exist });
+});
+
 productsRouter.post('/productos/guardar', (req,res)=>{
     let body = req.body;
     productos.length>0?newId= productos[productos.length - 1].id +1:newId=1;
@@ -49,7 +69,7 @@ productsRouter.post('/productos/guardar', (req,res)=>{
         thumbnail: body.thumbnail
     };
     productos.push(object);
-    res.json({body, response: '200 OK'});
+    res.redirect('/');
 });
 
 productsRouter.put('/productos/actualizar/:id', (req,res)=>{
@@ -70,5 +90,7 @@ productsRouter.delete('/productos/borrar/:id', (req,res)=>{
     const object={error : 'producto no encontrado'};
     res.json(index>=0? {succes, response: '200 OK'}: {object, response: '400 Bad request'});
 });
+
+
 
     
