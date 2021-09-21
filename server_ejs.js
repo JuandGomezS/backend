@@ -1,15 +1,12 @@
 const express = require('express');
 
 
-
 const app = express();
 const PORT = 8080;
 const productsRouter = express.Router();
 
 let productos =[];
 let newId= 0;
-
-
 
 
 app.use(express.json());
@@ -25,11 +22,7 @@ const server = app.listen(PORT, ()=>{
 server.on('error', error=>console.log('Error en servidor', error));
 
 
-app.set('views', './views');
-app.set('view engine', 'pug');
-
-
-
+app.set('view engine', 'ejs');
 
 
 productsRouter.get('/productos/listar', (req,res)=>{
@@ -47,7 +40,7 @@ productsRouter.get('/productos/listar/:id', (req,res)=>{
 
 productsRouter.get('/productos/vista', function(req, res) {
     let exist= productos.length>0?true:false;    
-    res.render('vista.pug', { products: productos, listExists: exist});
+    res.render('productos', { products: productos, listExists: exist});
 });
 
 productsRouter.post('/productos/guardar', (req,res)=>{
