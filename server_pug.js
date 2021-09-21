@@ -1,5 +1,4 @@
 const express = require('express');
-const handlebars = require('express-handlebars');
 
 
 
@@ -25,18 +24,10 @@ const server = app.listen(PORT, ()=>{
 });
 server.on('error', error=>console.log('Error en servidor', error));
 
-app.engine(
-    "hbs",
-    handlebars({
-        extname: ".hbs",
-        defaultLayout: "index.hbs",
-        layoutsDir: __dirname + "/views/layouts",
-        partialsDir: __dirname + "/views/partials"
-    })
-);
 
-app.set('views', './views/partials'); // especifica el directorio de vistas
-app.set('view engine', 'hbs'); // registra el motor de plantillas
+app.set('views', './views');
+app.set('view engine', 'pug');
+
 
 
 
@@ -55,8 +46,8 @@ productsRouter.get('/productos/listar/:id', (req,res)=>{
 });
 
 productsRouter.get('/productos/vista', function(req, res) {
-    let exist= productos.length>0?true:false;
-    res.render('main', { products: productos, listExists: exist });
+    let exist= productos.length>0?true:false;    
+    res.render('vista.pug', { products: productos, listExists: exist});
 });
 
 productsRouter.post('/productos/guardar', (req,res)=>{
