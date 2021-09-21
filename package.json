@@ -1,5 +1,4 @@
 {
-
   "name": "clase-8",
   "version": "1.0.0",
   "main": "01-server.js",
@@ -11,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "express-handlebars": "^5.3.3"
+    "pug": "^3.0.2"
   },
   "description": ""
 }

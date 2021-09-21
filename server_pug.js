@@ -90,7 +90,3 @@ productsRouter.delete('/productos/borrar/:id', (req,res)=>{
     const object={error : 'producto no encontrado'};
     res.json(index>=0? {succes, response: '200 OK'}: {object, response: '400 Bad request'});
 });
-
-
-
-    
