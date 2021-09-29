@@ -12,7 +12,7 @@
     <title>EXPRESS</title>
 </head>
 <body>
- 
+    <!-- Ingreso de productos -->
     <h1>THIS IS THE WAY!</h1>
     <form id= "formulario" novalidate>
         <fieldset>
@@ -23,6 +23,8 @@
         </fieldset>    
         <input type="submit" value="Guardar Producto" class="enviar">
     </form>
+
+    <!-- WS tabla de productos -->
     <div id="tablaProductos">
         <table class="table">
             <thead>
@@ -36,6 +38,19 @@
             <tbody id="tbody"></tbody>
           </table>
     </div>
+
+    <!-- CHAT -->
+    <div id="chat" style="margin-left: 1rem;">
+        <input type="email" id="usuario" placeholder="Ingrese su correo" required/>
+    </div>
+    <br/>
+    <div id="mensajes"></div>
+    <br/>
+    <form onsubmit="return enviarMensaje(this)">
+        <input type="text" id="texto" placeholder="Su mensaje..." />
+        <input type="submit" value="Enviar" />
+    </form>
+
 
     <hr>
 

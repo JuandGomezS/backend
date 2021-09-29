@@ -1,5 +1,7 @@
 let socket = io();
 
+
+
 let form= document.getElementById("formulario");
 form.addEventListener('submit',(event) =>{
     event.preventDefault();
@@ -34,6 +36,8 @@ socket.on('tablaProductos', (data)=>{
     console.log(data)
 });
 
+
+
 let render = (data) => {
     let html;
     if(data.length>0){
@@ -53,7 +57,37 @@ let render = (data) => {
                 <td scope="row" colspan="4" style="text-align:center;">HO HAY PRODUCTOS</td>
             </tr>`
     }
-    document.getElementById("tbody").innerHTML = html;
+    document.getElementById("tbody").innerHTML = html; 
+}
+
+socket.on('mensajes', (data)=>{
     
+    renderChat(data);
+});
+
+let renderChat = (data) => { 	
+    let html = data.map((e,i)=>`
+        <div>
+            <strong style="color: blue;">${e.autor}</strong>
+            <strong style="color: brown;">[${e.date}]:</strong>
+            <em>${e.texto}</em>
+        </div>
+    `).join(' ');
+    document.getElementById("mensajes").innerHTML = html;
+}
+
+
+function enviarMensaje(e){
+    let date = new Date();
+    
+    let dateFormat= `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+    console.log(dateFormat)
+    let envio = {
+        autor: document.getElementById("usuario").value,
+        date: dateFormat,
+        texto: document.getElementById('texto').value,
+    }
+    socket.emit('nuevo-mensaje', envio);
+    return false;
 }
 

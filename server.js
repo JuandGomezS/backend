@@ -8,6 +8,7 @@ const productsRouter = express.Router();
 
 
 let productos = [];
+let mensajes=[];
 let newId = 0;
 
 app.use(express.json());
@@ -17,13 +18,15 @@ app.use("/api", productsRouter);
 
 app.use(express.static("./front"));
 
-http.listen(8080, () => console.log("Servidor corriendo en puerto 8080..."));
+let PORT=8080;
 
-/* const server = app.listen(PORT, ()=>{
+/* http.listen(8080, () => console.log("Servidor corriendo en puerto 8080...")); */
+
+const server = http.listen(PORT, ()=>{
     console.log('Servidor HTTP escuchando en el puerto', server.address().port);
 });
 
-server.on('error', error=>console.log('Error en servidor', error)); */
+server.on('error', error=>console.log('Error en servidor', error));
 
 app.engine(
   "hbs",
@@ -118,10 +121,15 @@ productsRouter.delete("/productos/borrar/:id", (req, res) => {
 
 io.on("connection", (socket) => {
   console.log("Cliente conectado!");
-  productos.length
   socket.emit("tablaProductos", productos);
   socket.on("modificacion", (data) => {
     io.sockets.emit("tablaProductos", productos);
   });
-  console.log(socket.connected)
+
+  socket.emit("mensajes", mensajes);
+  socket.on("nuevo-mensaje", (data) => {
+    mensajes.push(data);
+    io.sockets.emit("mensajes", mensajes);
+  });
+  
 });
