@@ -6,9 +6,8 @@ const io = require("socket.io")(http);
 
 const productsRouter = express.Router();
 
-
 let productos = [];
-let mensajes=[];
+let mensajes = [];
 let newId = 0;
 
 app.use(express.json());
@@ -18,15 +17,15 @@ app.use("/api", productsRouter);
 
 app.use(express.static("./front"));
 
-let PORT=8080;
+let PORT = 8080;
 
 /* http.listen(8080, () => console.log("Servidor corriendo en puerto 8080...")); */
 
-const server = http.listen(PORT, ()=>{
-    console.log('Servidor HTTP escuchando en el puerto', server.address().port);
+const server = http.listen(PORT, () => {
+  console.log("Servidor HTTP escuchando en el puerto", server.address().port);
 });
 
-server.on('error', error=>console.log('Error en servidor', error));
+server.on("error", (error) => console.log("Error en servidor", error));
 
 app.engine(
   "hbs",
@@ -69,7 +68,7 @@ productsRouter.get("/productos/vista", function (req, res) {
 
 productsRouter.post("/productos/guardar", (req, res) => {
   let body = req.body;
-  console.log(body)
+  console.log(body);
   productos.length > 0
     ? (newId = productos[productos.length - 1].id + 1)
     : (newId = 1);
@@ -131,5 +130,4 @@ io.on("connection", (socket) => {
     mensajes.push(data);
     io.sockets.emit("mensajes", mensajes);
   });
-  
 });
