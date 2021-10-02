@@ -6,8 +6,8 @@ const io = require("socket.io")(http);
 
 const productsRouter = express.Router();
 
-let productos: {title:string, price:Number, thumbnail:string} []= [];
-let mensajes = [];
+let productos: {title:string, price:Number, thumbnail:string, id:string} []= [];
+let mensajes: {autor:string, date:string, texto:string} []= [];
 let newId = 0;
 
 app.use(express.json());
@@ -50,7 +50,7 @@ productsRouter.get("/productos/listar", (req, res) => {
 
 productsRouter.get("/productos/listar/:id", (req, res) => {
   let params = req.params;
-  let id = params.id;
+  let id:string = params.id;
   const product = productos.find((elemento) => elemento.id == id);
   const object = { error: "producto no encontrado" };
   res.json(
