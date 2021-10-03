@@ -1,14 +1,14 @@
-import express from "express";
-import handlebars from "express-handlebars";
+import * as express from "express";
+import * as handlebars from "express-handlebars";
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
 const productsRouter = express.Router();
 
-let productos: {title:string, price:Number, thumbnail:string, id:string} []= [];
+let productos: {title:string, price:string, thumbnail:string, id:any} []= [];
 let mensajes: {autor:string, date:string, texto:string} []= [];
-let newId = 0;
+let newId:Number = 0;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,7 +50,7 @@ productsRouter.get("/productos/listar", (req, res) => {
 
 productsRouter.get("/productos/listar/:id", (req, res) => {
   let params = req.params;
-  let id:string = params.id;
+  let id:any = params.id;
   const product = productos.find((elemento) => elemento.id == id);
   const object = { error: "producto no encontrado" };
   res.json(
@@ -66,12 +66,11 @@ productsRouter.get("/productos/vista", function (req, res) {
 });
 
 productsRouter.post("/productos/guardar", (req, res) => {
-  let body = req.body;
-  console.log(body);
+  let body:any = req.body;
   productos.length > 0
     ? (newId = productos[productos.length - 1].id + 1)
     : (newId = 1);
-  let object = {
+  let object:{id:any,title:string, price:string, thumbnail:string } = {
     id: newId,
     title: body.title,
     price: body.price,
@@ -117,15 +116,15 @@ productsRouter.delete("/productos/borrar/:id", (req, res) => {
   );
 });
 
-io.on("connection", (socket) => {
+io.on("connection", (socket: { emit: (arg0: string, arg1: { title: string; price: string; thumbnail: string; id: any; }[] | { autor: string; date: string; texto: string; }[]) => void; on: (arg0: string, arg1: { (data: any): void; (data: any): void; }) => void; }) => {
   console.log("Cliente conectado!");
   socket.emit("tablaProductos", productos);
-  socket.on("modificacion", (data) => {
+  socket.on("modificacion", (data: any) => {
     io.sockets.emit("tablaProductos", productos);
   });
 
   socket.emit("mensajes", mensajes);
-  socket.on("nuevo-mensaje", (data) => {
+  socket.on("nuevo-mensaje", (data: { autor: string; date: string; texto: string; }) => {
     mensajes.push(data);
     io.sockets.emit("mensajes", mensajes);
   });
