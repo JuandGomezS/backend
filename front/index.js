@@ -78,7 +78,7 @@ let renderChat = (data) => {
 function enviarMensaje(e) {
   let date = new Date();
 
-  let dateFormat = `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  let dateFormat = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
   console.log(dateFormat);
   let envio = {
     autor: document.getElementById("usuario").value,

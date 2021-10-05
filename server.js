@@ -4,6 +4,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { productsRouter, productos } from "./src/Routers/productos.router.js";
 
+
 //****************SETTINGS*******************
 const app = express();
 const http = createServer(app);
@@ -28,8 +29,8 @@ app.engine(
   handlebars({
     extname: ".hbs",
     defaultLayout: "index.hbs",
-    layoutsDir: "C:/Users/Sebi/Escritorio/CODER HOUSE/BackEnd/BEGithub/Desafio express avanzado/views/layouts",
-    partialsDir: "C:/Users/Sebi/Escritorio/CODER HOUSE/BackEnd/BEGithub/Desafio express avanzado/views/partials",
+    layoutsDir: "./views/layouts",
+    partialsDir: "./views/partials",
   })
 );
 app.set("views", "./views/partials");
