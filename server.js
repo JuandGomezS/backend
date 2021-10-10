@@ -2,13 +2,20 @@ import express from "express";
 import handlebars from "express-handlebars";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { productsRouter, productos } from "./src/Routers/productos.router.js";
+import { productsRouter, toSocketProd } from "./src/Routers/productos.router.js";
+import {createTable, insertMessage, getMessages} from "./src/models/mensajes.js"
+
 
 
 //****************SETTINGS*******************
 const app = express();
 const http = createServer(app);
 const io = new Server(http);
+
+
+createTable()
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -44,18 +51,21 @@ app.use("/api", productsRouter);
 app.use("/api", carritoRouter);
 //*******************************************
 
-let mensajes = [];
 
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
+  let productos = await toSocketProd();
   socket.emit("tablaProductos", productos);
-  socket.on("modificacion", (data) => {
+  socket.on("modificacion", async (data) => {
+    productos = await toSocketProd();
     io.sockets.emit("tablaProductos", productos);
   });
-
+  
+  let mensajes = await getMessages();
   socket.emit("mensajes", mensajes);
-  socket.on("nuevo-mensaje", (data) => {
-    mensajes.push(data);
+  socket.on("nuevo-mensaje", async (data) => {
+    await insertMessage(data);
+    mensajes = await getMessages();
     io.sockets.emit("mensajes", mensajes);
   });
 });
