@@ -1,56 +1,34 @@
-import {optionsSQLite} from "../options/sqlite.js";
-import Knex from 'knex';
+import mongoose from 'mongoose';
 
-const knex = Knex(optionsSQLite);
+const mensajesCollection = 'mensajes';
 
-const createTable = ()=>{
-    try {
+const mensajeEsquema = mongoose.Schema({
+    autor: {type: String, require: true, minLength: 1, maxLenghth: 50},
+    date: {type: String, require: true, minLength: 1, maxLenghth: 50},
+    texto: {type: String, require: true, minLength: 1, maxLenghth: 1000},
+});
 
-        knex.schema.hasTable('mensajes').then(async function(exists) {
-            if (!exists) {
-                try {
-                  await knex.schema.createTable('mensajes', table => {
-                    table.increments('id'),
-                    table.string('autor'),
-                    table.string('date');
-                    table.string('texto');
-                  });
-                  console.log('tabla creada!');
-                  knex.destroy();
-                } 
-                catch (e) {
-                  console.log('Error en create de tabla:', e);
-                  knex.destroy();
-                }
-              }
-            }
-        );
-        
+const mensaje = mongoose.model(mensajesCollection, mensajeEsquema);
+
+const getMessages = async()=>{
+    let mensajes= await mensaje.find({}, {_id: 0, __v: 0});
+    return mensajes
+}
+
+const insertMessage = async (data)=>{
+    try {  
+        let mensaj=new mensaje(data)
+        mensaj.save(function (err, book) {
+            if (err) return console.error(err);
+            console.log(" Mensaje guardado.");
+        });
     } catch (error) {
-        console.log('Error base de datos:', error);
+        throw `Error: ${error}`;
     }
-    
-};
+}
 
-const insertMessage=async (mensaje)=>{
-    try {
-        await knex('mensajes').insert({
-            autor: mensaje.autor,
-            date: mensaje.date,
-            texto: mensaje.texto
-        })
-        return true
-    } catch (error) {
-        return false
-    }
-};
+export {getMessages, insertMessage}
 
-const getMessages=async ()=>{
-    try {
-        return await knex.select('*').from('mensajes')
-    } catch (error) {
-        return []
-    }
-};
 
-export {createTable, insertMessage, getMessages}
+
+

@@ -4,14 +4,13 @@ import Knex from 'knex';
 const knex = Knex(options);
 
 const createTable = ()=>{
-    
     knex.schema.hasTable('productos').then(async function(exists) {
         if (!exists) {
             try {
               await knex.schema.createTable('productos', table => {
                 table.increments('id'),
-                  table.string('title'),
-                  table.integer('price');
+                table.string('title'),
+                table.integer('price');
                 table.string('thumbnail');
               });
               console.log('tabla creada!');

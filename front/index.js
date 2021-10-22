@@ -29,7 +29,6 @@ form.addEventListener("submit", (event) => {
 
 socket.on("tablaProductos", (data) => {
   render(data);
-  console.log(data);
 });
 
 let render = (data) => {
