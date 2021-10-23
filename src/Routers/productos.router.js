@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {getProduct, getProducts, deleteProduct, updateProduct, insertProduct, createTable} from "../models/productos.js"
+import {getProduct, getProducts, deleteProduct, updateProduct, insertProduct, getProductsH} from "../models/productos.js"
 
 
 
@@ -7,7 +7,6 @@ export const toSocketProd= async()=>{
   return await getProducts()
 }
 
-createTable();
 
 export const productsRouter = Router();
 
@@ -27,7 +26,8 @@ productsRouter
   })
 
   .get("/productos/vista",async (req, res) =>{
-    let productos = await getProducts();
+    let productos = await getProductsH();
+    console.log(productos)
     let exist = productos.length > 0 ? true : false;
     res.render("main", { products: productos, listExists: exist });
   })
@@ -70,8 +70,15 @@ productsRouter
 
   .delete("/productos/borrar/:id", async (req, res) => {
     let params = req.params;
-    let id = params.id;
+    let id = parseInt(params.id);
+    let currentProd= await getProduct(id);
+    if(!currentProd){
+      const respuesta = { error: "producto no encontrado" };
+      res.status(404).send(respuesta)
+      return;
+    }
     let succes = await deleteProduct(id)
+    console.log(succes)
     const dele = { Description: "Producto eliminado" };
     const object = { Description: "Producto no encontrado" };
     succes? res.json({dele, Response:"200 OK"}):res.status(404).send(object)

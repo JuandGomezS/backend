@@ -15,14 +15,17 @@ const getProducts= async ()=>{
   return await producto.find({}, {_id: 0, __v: 0})
 }
 
+const getProductsH= async ()=>{
+    return await producto.find({}, {_id: 0, __v: 0}).lean()
+  }
+
 const getProduct= async (id)=>{
     return await producto.find({id:id},{_id: 0, __v: 0})
 }
 
 const updateProduct= async (prod,id)=>{
     try {
-        console.log(prod)
-        await producto.updateOne({id:id}, {prod});
+        await producto.updateOne({id:id}, prod);
         return true
     } catch (error) {
         return false
@@ -31,22 +34,27 @@ const updateProduct= async (prod,id)=>{
 
 const deleteProduct= async (id)=>{
     try {
-        await knex('productos')
-        .where('id', id)
-        .del()
-        return true
+        let del= await producto.deleteOne({id:id})
+        return del.deletedCount>0
     } catch (error) {
         return false
     }
 }
 
-const insertProduct=async (producto)=>{
+const insertProduct=async ({title,price,thumbnail})=>{
     try {
-        await knex('productos').insert({
-            title: producto.title,
-            price: producto.price,
-            thumbnail: producto.thumbnail
-        })
+
+
+        let last= await producto.find({}).sort({id: -1}).limit(1);
+        console.log(last)
+        let newId=last.length==0?1:last.shift().id+1;
+        console.log(`ID: ${newId}`)
+        let prod=new producto({id:newId, title, price, thumbnail})
+        prod.save(function (err, book) {
+            if (err) return console.error(err);
+            console.log(" Producto guardado.");
+        });
+
         return true
     } catch (error) {
         return false
@@ -54,4 +62,4 @@ const insertProduct=async (producto)=>{
 }
 
 
-export {getProduct, getProducts, deleteProduct, updateProduct, insertProduct, createTable}
+export {getProduct, getProducts, deleteProduct, updateProduct, insertProduct, getProductsH}
