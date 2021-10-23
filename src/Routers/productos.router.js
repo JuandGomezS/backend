@@ -27,7 +27,6 @@ productsRouter
 
   .get("/productos/vista",async (req, res) =>{
     let productos = await getProductsH();
-    console.log(productos)
     let exist = productos.length > 0 ? true : false;
     res.render("main", { products: productos, listExists: exist });
   })

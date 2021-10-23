@@ -46,9 +46,7 @@ const insertProduct=async ({title,price,thumbnail})=>{
 
 
         let last= await producto.find({}).sort({id: -1}).limit(1);
-        console.log(last)
         let newId=last.length==0?1:last.shift().id+1;
-        console.log(`ID: ${newId}`)
         let prod=new producto({id:newId, title, price, thumbnail})
         prod.save(function (err, book) {
             if (err) return console.error(err);
