@@ -1,43 +1,28 @@
-import {options} from "../options/MariaDB.js";
-import Knex from 'knex';
+import mongoose from 'mongoose';
 
-const knex = Knex(options);
+const productosCollection = 'productos';
 
-const createTable = ()=>{
-    knex.schema.hasTable('productos').then(async function(exists) {
-        if (!exists) {
-            try {
-              await knex.schema.createTable('productos', table => {
-                table.increments('id'),
-                table.string('title'),
-                table.integer('price');
-                table.string('thumbnail');
-              });
-              console.log('tabla creada!');
-              knex.destroy();
-            } 
-            catch (e) {
-              console.log('Error en create de tabla:', e);
-              knex.destroy();
-            }
-          }
-        }
-    );
-};
+const productoEsquema = mongoose.Schema({
+    id:{type: Number, require: true},
+    title: {type: String, require: true, minLength: 1, maxLenghth: 50},
+    price: {type: Number, require: true},
+    thumbnail: {type: String, require: true, minLength: 1, maxLenghth: 1000},
+});
+
+const producto = mongoose.model(productosCollection, productoEsquema);
 
 const getProducts= async ()=>{
-  return await knex.select('*').from('productos')
+  return await producto.find({}, {_id: 0, __v: 0})
 }
 
 const getProduct= async (id)=>{
-    return await knex.select('*').from('productos').where("id", id)
+    return await producto.find({id:id},{_id: 0, __v: 0})
 }
 
-const updateProduct= async (producto,id)=>{
+const updateProduct= async (prod,id)=>{
     try {
-        await knex('productos')
-        .where('id', id)
-        .update(producto)
+        console.log(prod)
+        await producto.updateOne({id:id}, {prod});
         return true
     } catch (error) {
         return false
