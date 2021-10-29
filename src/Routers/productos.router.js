@@ -1,10 +1,10 @@
 import { Router } from "express";
-import {getProduct, getProducts, deleteProduct, updateProduct, insertProduct, getProductsH} from "../models/productos.js"
+import {producto, insertProduct} from "../models/productos.js"
 
 
 
 export const toSocketProd= async()=>{
-  return await getProducts()
+  return await producto.find({}, {_id: 0, __v: 0});
 }
 
 
@@ -12,7 +12,7 @@ export const productsRouter = Router();
 
 productsRouter
   .get("/productos/listar", async (req, res) => {
-    let productos = await getProducts();
+    let productos = await producto.find({}, {_id: 0, __v: 0});
     const object = { error: "no hay productos cargados" };
     res.json(productos.length>0 ? { productos, response: "200 OK" } : { object, response: "400 Bad request"});
   })
@@ -20,13 +20,13 @@ productsRouter
   .get("/productos/listar/:id", async (req, res) => {
     let params = req.params;
     let id = params.id;
-    const product = await getProduct(id)
+    const product = await producto.find({id:id},{_id: 0, __v: 0});
     const object = { error: "producto no encontrado" };
     res.json(product ? { product, response: "200 OK" } : { object, response: "400 Bad request"});
   })
 
   .get("/productos/vista",async (req, res) =>{
-    let productos = await getProductsH();
+    let productos = await producto.find({}, {_id: 0, __v: 0}).lean();
     let exist = productos.length > 0 ? true : false;
     res.render("main", { products: productos, listExists: exist });
   })
@@ -47,7 +47,7 @@ productsRouter
     let params = req.params;
     let body = req.body;
     let id = parseInt(params.id);
-    let currentProd= await getProduct(id);
+    let currentProd= await producto.find({id:id},{_id: 0, __v: 0})
     if(!currentProd){
       const respuesta = { error: "producto no encontrado" };
       res.status(404).send(respuesta)
@@ -63,24 +63,23 @@ productsRouter
     if (currentProd.thumbnail!=body.thumbnail){
       object.thumbnail=body.thumbnail;
     }
-    let succes= await updateProduct(object,id);
-    res.json({ Description: succes? "Producto actualizado": "Producto no actualizado", Response: "200 OK"})
+    let succes= await producto.updateOne({id:id}, object);
+    res.json({ Description: succes.modifiedCount>0? "Producto actualizado": "Producto ya actualizado o no encontrado", Response: "200 OK"})
   })
 
   .delete("/productos/borrar/:id", async (req, res) => {
     let params = req.params;
     let id = parseInt(params.id);
-    let currentProd= await getProduct(id);
+    let currentProd= await producto.find({id:id},{_id: 0, __v: 0})
     if(!currentProd){
       const respuesta = { error: "producto no encontrado" };
       res.status(404).send(respuesta)
       return;
     }
-    let succes = await deleteProduct(id)
-    console.log(succes)
+    let succes = await producto.deleteOne({id:id})
     const dele = { Description: "Producto eliminado" };
     const object = { Description: "Producto no encontrado" };
-    succes? res.json({dele, Response:"200 OK"}):res.status(404).send(object)
+    succes.deletedCount>0? res.json({dele, Response:"200 OK"}):res.status(404).send(object)
 });
 
 

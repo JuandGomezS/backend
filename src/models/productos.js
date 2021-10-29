@@ -11,40 +11,10 @@ const productoEsquema = mongoose.Schema({
 
 const producto = mongoose.model(productosCollection, productoEsquema);
 
-const getProducts= async ()=>{
-  return await producto.find({}, {_id: 0, __v: 0})
-}
 
-const getProductsH= async ()=>{
-    return await producto.find({}, {_id: 0, __v: 0}).lean()
-  }
-
-const getProduct= async (id)=>{
-    return await producto.find({id:id},{_id: 0, __v: 0})
-}
-
-const updateProduct= async (prod,id)=>{
-    try {
-        await producto.updateOne({id:id}, prod);
-        return true
-    } catch (error) {
-        return false
-    }
-}
-
-const deleteProduct= async (id)=>{
-    try {
-        let del= await producto.deleteOne({id:id})
-        return del.deletedCount>0
-    } catch (error) {
-        return false
-    }
-}
 
 const insertProduct=async ({title,price,thumbnail})=>{
     try {
-
-
         let last= await producto.find({}).sort({id: -1}).limit(1);
         let newId=last.length==0?1:last.shift().id+1;
         let prod=new producto({id:newId, title, price, thumbnail})
@@ -52,7 +22,6 @@ const insertProduct=async ({title,price,thumbnail})=>{
             if (err) return console.error(err);
             console.log(" Producto guardado.");
         });
-
         return true
     } catch (error) {
         return false
@@ -60,4 +29,4 @@ const insertProduct=async ({title,price,thumbnail})=>{
 }
 
 
-export {getProduct, getProducts, deleteProduct, updateProduct, insertProduct, getProductsH}
+export { insertProduct, producto}
