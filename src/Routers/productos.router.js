@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {producto, insertProduct} from "../models/productos.js"
-
+import { fakeProds } from "../generador/productosFake.js"; 
 
 
 export const toSocketProd= async()=>{
@@ -27,6 +27,17 @@ productsRouter
 
   .get("/productos/vista",async (req, res) =>{
     let productos = await producto.find({}, {_id: 0, __v: 0}).lean();
+    let exist = productos.length > 0 ? true : false;
+    res.render("main", { products: productos, listExists: exist });
+  })
+
+  .get("/productos/vista-test",async (req, res) =>{
+    let productos = [];
+    let cant = req.query.cant || 10;
+    for (let i=0; i<cant; i++) {
+      let prod= fakeProds();
+      productos.push(prod);
+    }
     let exist = productos.length > 0 ? true : false;
     res.render("main", { products: productos, listExists: exist });
   })
