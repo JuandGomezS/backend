@@ -79,7 +79,14 @@ function enviarMensaje(e) {
 
   let dateFormat = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
   let envio = {
-    autor: document.getElementById("usuario").value,
+    autor: {
+      id: document.getElementById("usuario_mail").value,
+      nombre: document.getElementById("usuario_name").value, 
+      apellido: document.getElementById("usuario_apellido").value, 
+      edad: document.getElementById("usuario_edad").value, 
+      alias: document.getElementById("usuario_alias").value,
+      avatar: document.getElementById("usuario_avatar").value
+    },
     date: dateFormat,
     texto: document.getElementById("texto").value,
   };
