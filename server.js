@@ -32,10 +32,26 @@ server.on("error", (error) => console.log("Error en servidor", error));
 app.use(session({
   secret: 'secreto',
   resave: true,
-  saveUninitialized: true
-}));
+  saveUninitialized: true,
+  rolling: true,
+  cookie: {
+    maxAge: 60000,
+  }
+}))
 //*******************************************
-
+app.use(function (req, res, next) {
+  console.log(req.originalUrl)
+  console.log(req.session.user)
+  if(req.originalUrl==='/login'){
+    next()
+  }else{
+    if(!req.session.user){
+      res.status(403).send({})
+    }else{
+      next()
+    }
+  }
+})
 //****************HANDLEBARS*****************
 app.engine(
   "hbs",
@@ -56,8 +72,7 @@ app.use("/api", productsRouter);
 app.post('/login',(req,res)=>{
   let {usuario} = req.body;
   usuarioC=usuario;
-  res.cookie('session', usuario,{maxAge: 60000});
-  console.log(req.cookies)
+  req.session.user=usuario
   res.redirect('/front.html');
 });
 //*******************************************

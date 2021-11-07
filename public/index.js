@@ -1,5 +1,9 @@
 let socket = io();
 
+window.onload=()=>{
+  
+}
+
 let form = document.getElementById("formulario");
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -16,12 +20,23 @@ form.addEventListener("submit", (event) => {
         "Content-Type": "application/json",
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw Error(response.status);
+        }
+      return response.json();
+      })
       .then((result) => {
         console.log(result);
         socket.emit("modificacion");
         form.reset();
-      });
+      })
+      .catch((error)=>{
+        if(error=="Error: 403"){
+          window.location.href='/'
+        }
+      })
+      
   } else {
     alert("Debe diligenciar el formulario completo");
   }
