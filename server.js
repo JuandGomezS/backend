@@ -5,16 +5,17 @@ import { Server } from "socket.io";
 import { connectDB } from "./src/dbConnect/connect.js"
 import { productsRouter , toSocketProd } from "./src/Routers/productos.router.js";
 import { getMessages , insertMessage } from "./src/models/mensajes.js"
-
-
+import cookieParser from "cookie-parser";
+import session from "express-session";
 
 //****************SETTINGS*******************
 const app = express();
 const http = createServer(app);
 const io = new Server(http);
-
+export let usuarioC;
 connectDB();
 
+app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,8 +25,15 @@ const server = http.listen(PORT, () => {
   console.log("Servidor HTTP escuchando en el puerto", server.address().port);
 });
 
+app.use(cookieParser());
+
 server.on("error", (error) => console.log("Error en servidor", error));
-app.use(express.static("./front"));
+
+app.use(session({
+  secret: 'secreto',
+  resave: true,
+  saveUninitialized: true
+}));
 //*******************************************
 
 //****************HANDLEBARS*****************
@@ -44,6 +52,14 @@ app.set("view engine", "hbs");
 
 //******************ROUTER*******************
 app.use("/api", productsRouter);
+
+app.post('/login',(req,res)=>{
+  let {usuario} = req.body;
+  usuarioC=usuario;
+  res.cookie('session', usuario,{maxAge: 60000});
+  console.log(req.cookies)
+  res.redirect('/front.html');
+});
 //*******************************************
 
 io.on("connection", async (socket) => {
