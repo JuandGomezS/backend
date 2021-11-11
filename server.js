@@ -4,6 +4,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { connectDB } from "./src/dbConnect/connect.js"
 import { productsRouter , toSocketProd } from "./src/Routers/productos.router.js";
+import { sessionRouter, usuarioC} from "./src/Routers/session.router.js";
 import { getMessages , insertMessage } from "./src/models/mensajes.js"
 import cookieParser from "cookie-parser";
 import session from "express-session";
@@ -12,7 +13,7 @@ import session from "express-session";
 const app = express();
 const http = createServer(app);
 const io = new Server(http);
-export let usuarioC;
+
 connectDB();
 
 app.use(express.static("public"));
@@ -42,7 +43,7 @@ app.use(session({
 app.use(function (req, res, next) {
   console.log(req.originalUrl)
   console.log(req.session.user)
-  if(req.originalUrl==='/login'){
+  if(req.originalUrl==='/api/login'){
     next()
   }else{
     if(!req.session.user){
@@ -68,13 +69,12 @@ app.set("view engine", "hbs");
 
 //******************ROUTER*******************
 app.use("/api", productsRouter);
+app.use("/api", sessionRouter);
 
-app.post('/login',(req,res)=>{
-  let {usuario} = req.body;
-  usuarioC=usuario;
-  req.session.user=usuario
-  res.redirect('/front.html');
-});
+
+
+
+
 //*******************************************
 
 io.on("connection", async (socket) => {

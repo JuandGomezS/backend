@@ -1,8 +1,67 @@
 let socket = io();
-
+let usuario;
 window.onload=()=>{
-  
+  const options={
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    }
+  }
+  fetch("/api/session", options)
+  .then((response) => {
+    if (!response.ok) {
+      throw Error(response.status);
+    }
+   return response.json();
+  })
+  .then((result) => {
+    let user = result.user;
+    usuario=user;
+    const html=`<h1>BIENVENIDO ${user}</h1>
+    <button id="logout">LOGOUT</button>`
+    document.getElementById("welcome").innerHTML = html;
+    logout()
+  })
+  .catch((error)=>{
+    if(error=="Error: 403"){
+      window.location.href='/'
+    }
+  })
 }
+const logout=()=>{
+  let salir = document.getElementById("logout");
+  salir.addEventListener("click", (event) => {
+    const options={
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }
+    fetch("/api/logout", options)
+    .then((response) => {
+      if (!response.ok) {
+        throw Error(response.status);
+      }
+     return response.json();
+    })
+    .then((result) => {
+      if(result.status=="true"){
+        document.getElementById("adiosito").innerText=`Hasta luego ${usuario}`
+        var myModal = new bootstrap.Modal(document.getElementById('myModal'))
+        myModal.show()
+        setTimeout(() => {
+          window.location.href='/' 
+        }, 2000);
+      }
+    })
+    .catch((error)=>{
+      if(error=="Error: 403"){
+        window.location.href='/'
+      }
+    })
+  });
+}
+
 
 let form = document.getElementById("formulario");
 form.addEventListener("submit", (event) => {

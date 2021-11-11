@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {producto, insertProduct} from "../models/productos.js"
 import { fakeProds } from "../generador/productosFake.js"; 
-import {usuarioC} from "../../server.js"
+import {usuarioC} from "./session.router.js"
 
 export const toSocketProd= async()=>{
   return await producto.find({}, {_id: 0, __v: 0});
@@ -12,15 +12,18 @@ export const productsRouter = Router();
 productsRouter
   
   .get("/productos/listar", async (req, res) => {
+    if(!req.session.user){
+      console.log("Si entré")
+      res.redirect('/')
+      return;
+    }
     let productos = await producto.find({}, {_id: 0, __v: 0});
     const object = { error: "no hay productos cargados" };
     res.json(productos.length>0 ? { productos, response: "200 OK" } : { object, response: "400 Bad request"});
   })
 
   .get("/productos/listar/:id", async (req, res) => {
-    if(req.session.user){
-      res.redirect('/')
-    }
+    
     let params = req.params;
     let id = params.id;
     const product = await producto.find({id:id},{_id: 0, __v: 0});
