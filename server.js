@@ -39,20 +39,7 @@ app.use(session({
     maxAge: 60000,
   }
 }))
-//*******************************************
-app.use(function (req, res, next) {
-  console.log(req.originalUrl)
-  console.log(req.session.user)
-  if(req.originalUrl==='/api/login'){
-    next()
-  }else{
-    if(!req.session.user){
-      res.status(403).send({})
-    }else{
-      next()
-    }
-  }
-})
+
 //****************HANDLEBARS*****************
 app.engine(
   "hbs",
