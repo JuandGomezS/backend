@@ -30,15 +30,22 @@ app.use(cookieParser());
 
 server.on("error", (error) => console.log("Error en servidor", error));
 
-app.use(session({
-  secret: 'secreto',
-  resave: true,
-  saveUninitialized: true,
-  rolling: true,
-  cookie: {
-    maxAge: 60000,
-  }
-}))
+app.use(
+  session({
+    secret: "secreto",
+    saveUninitialized: false,
+    resave: false,
+    rolling: true,
+    store: MongoStore.create({
+      mongoUrl: "mongodb+srv://juanGomez:Juan.1604*@cluster0.dwkqc.mongodb.net/ecommerce?retryWrites=true&w=majority",
+      mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+      ttl: 600,
+    }),
+    cookie: {
+      maxAge: 600 * 1000,
+    },
+  })
+);
 
 //****************HANDLEBARS*****************
 app.engine(
