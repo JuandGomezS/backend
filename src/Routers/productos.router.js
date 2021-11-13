@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {producto, insertProduct} from "../models/productos.js"
 import { fakeProds } from "../generador/productosFake.js"; 
-import { auth } from "../utils/auth.js";
+import { auth } from "../utils/util.js";
 export const toSocketProd= async()=>{
   return await producto.find({}, {_id: 0, __v: 0});
 }

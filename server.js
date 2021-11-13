@@ -9,6 +9,8 @@ import { getMessages , insertMessage } from "./src/models/mensajes.js"
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
 
 //****************SETTINGS*******************
 const app = express();
@@ -38,7 +40,8 @@ app.use(
     resave: false,
     rolling: true,
     store: MongoStore.create({
-      mongoUrl: "mongodb+srv://juanGomez:Juan.1604*@cluster0.dwkqc.mongodb.net/ecommerce?retryWrites=true&w=majority",
+      // mongoUrl: "mongodb+srv://juanGomez:Juan.1604*@cluster0.dwkqc.mongodb.net/ecommerce?retryWrites=true&w=majority",
+      mongoUrl: 'mongodb://localhost:27017/ecommerce',
       mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 600,
     }),
@@ -48,6 +51,8 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
 //****************HANDLEBARS*****************
 app.engine(
   "hbs",
