@@ -8,6 +8,7 @@ import { sessionRouter, usuarioC} from "./src/Routers/session.router.js";
 import { getMessages , insertMessage } from "./src/models/mensajes.js"
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 
 //****************SETTINGS*******************
 const app = express();
