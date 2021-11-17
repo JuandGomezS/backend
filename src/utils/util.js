@@ -1,4 +1,4 @@
-export function auth (req, res, next) {
+function auth (req, res, next) {
     if (!req.session.user && req.originalUrl=="/api/productos/guardar"){
        return res.status(403).send({})
     }else if(req.session.user){
@@ -7,3 +7,4 @@ export function auth (req, res, next) {
        return res.redirect("/");
     }
 }
+

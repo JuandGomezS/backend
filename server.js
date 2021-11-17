@@ -53,6 +53,13 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+const loginStrat= new LocalStrategy(loginUser);
+const sigupStrat = new LocalStrategy(signupUser);
+
+passport.use("login", loginStrat);
+passport.use("signup", sigupStrat);
+
 //****************HANDLEBARS*****************
 app.engine(
   "hbs",
