@@ -4,14 +4,15 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { connectDB } from "./src/dbConnect/connect.js"
 import { productsRouter , toSocketProd } from "./src/Routers/productos.router.js";
-import { sessionRouter, usuarioC} from "./src/Routers/session.router.js";
+import { sessionRouter} from "./src/Routers/session.router.js";
 import { getMessages , insertMessage } from "./src/models/mensajes.js"
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-
+import { loginUser, signupUser, serializeUser, deserializeUser} from "./src/models/usuarios.js";
+import { getSignUp, getFailLogin, getFailSignUp, getLogin } from "./src/utils/util.js";
 //****************SETTINGS*******************
 const app = express();
 const http = createServer(app);
@@ -51,14 +52,44 @@ app.use(
   })
 );
 
+//******************ROUTER*******************
+app.use("/api", productsRouter);
+app.use("/api", sessionRouter);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-const loginStrat= new LocalStrategy(loginUser);
+const loginStrat= new LocalStrategy({passReqToCallback : true},loginUser);
 const sigupStrat = new LocalStrategy(signupUser);
+
+
 
 passport.use("login", loginStrat);
 passport.use("signup", sigupStrat);
+
+
+passport.serializeUser(serializeUser);
+passport.deserializeUser(deserializeUser);
+
+//Sign Up
+
+app.get('/signup',getSignUp)
+   .post("/signup", passport.authenticate("signup", { failureRedirect: "/failsignup", successRedirect: "/" }) )
+   .get('/failsignup', getFailSignUp);
+
+
+//log in
+
+app.get("/login", getLogin)
+  .post("/login", passport.authenticate("login", { failureRedirect: "/login/error", successRedirect: "/front.html" }))
+  .get("/faillogin", getFailLogin);
+
+
+app.post('/logout',(req,res)=>{
+  req.logout();
+  res.redirect('/');
+});
+
 
 //****************HANDLEBARS*****************
 app.engine(
@@ -74,9 +105,7 @@ app.set("views", "./views/partials");
 app.set("view engine", "hbs");
 //*******************************************
 
-//******************ROUTER*******************
-app.use("/api", productsRouter);
-app.use("/api", sessionRouter);
+
 
 
 

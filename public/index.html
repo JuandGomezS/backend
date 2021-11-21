@@ -8,12 +8,16 @@
 </head>
 <body>
     <div>
-        <h1>Login Usuario</h1>
-        <form action="/api/login" method="post">
-            <label for="usuario">usuario:</label>
-            <input type="text" id="usuario" name="usuario"><br><br>
-            <input type="submit" value="Ingresar">
+        <h1>Login</h1>
+        <form action="/login" method="post">
+            <label for="username">Usuario:</label>
+            <input type="text" id="username" name="username"><br><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br><br>
+            <input type="submit" value="Acceder">
         </form>  
+        <br>
+        <a href="register.html">Registrarse</a>
     </div>    
 </body>
 </html>

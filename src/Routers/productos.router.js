@@ -1,12 +1,21 @@
 import { Router } from "express";
 import {producto, insertProduct} from "../models/productos.js"
 import { fakeProds } from "../generador/productosFake.js"; 
-import { auth } from "../utils/util.js";
 export const toSocketProd= async()=>{
   return await producto.find({}, {_id: 0, __v: 0});
 }
 
 export const productsRouter = Router();
+
+function auth (req, res, next) {
+  if (!req.isAuthenticated() && req.originalUrl=="/api/productos/guardar"){
+     return res.status(403).send({})
+  }else if(req.isAuthenticated()){
+     return next() 
+  }else if(!req.isAuthenticated()){
+     return res.redirect("/");
+  }
+}
 
 productsRouter
   
