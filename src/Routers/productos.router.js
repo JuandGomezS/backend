@@ -1,31 +1,25 @@
 import { Router } from "express";
 import {producto, insertProduct} from "../models/productos.js"
 import { fakeProds } from "../generador/productosFake.js"; 
+import { auth } from "../utils/util.js";
+
 export const toSocketProd= async()=>{
   return await producto.find({}, {_id: 0, __v: 0});
 }
 
 export const productsRouter = Router();
 
-function auth (req, res, next) {
-  if (!req.isAuthenticated() && req.originalUrl=="/api/productos/guardar"){
-     return res.status(403).send({})
-  }else if(req.isAuthenticated()){
-     return next() 
-  }else if(!req.isAuthenticated()){
-     return res.redirect("/");
-  }
-}
+
 
 productsRouter
   
-  .get("/productos/listar",auth, async (req, res) => {
+  .get("/productos/listar", auth, async (req, res) => {
     let productos = await producto.find({}, {_id: 0, __v: 0});
     const object = { error: "no hay productos cargados" };
     res.json(productos.length>0 ? { productos, response: "200 OK" } : { object, response: "400 Bad request"});
   })
 
-  .get("/productos/listar/:id",auth, async (req, res) => {
+  .get("/productos/listar/:id", auth, async (req, res) => {
     let params = req.params;
     let id = params.id;
     const product = await producto.find({id:id},{_id: 0, __v: 0});
@@ -33,13 +27,13 @@ productsRouter
     res.json(product ? { product, response: "200 OK" } : { object, response: "400 Bad request"});
   })
 
-  .get("/productos/vista",auth,async (req, res) =>{
+  .get("/productos/vista", async (req, res) =>{
     let productos = await producto.find({}, {_id: 0, __v: 0}).lean();
     let exist = productos.length > 0 ? true : false;
     res.render("main", { products: productos, listExists: exist });
   })
 
-  .get("/productos/vista-test",auth,async (req, res) =>{
+  .get("/productos/vista-test", auth, async (req, res) =>{
     let productos = [];
     let cant = req.query.cant || 10;
     for (let i=0; i<cant; i++) {
@@ -50,7 +44,7 @@ productsRouter
     res.render("main", { products: productos, listExists: exist });
   })
 
-  .post("/productos/guardar",auth, async (req, res) => {
+  .post("/productos/guardar", auth, async (req, res) => {
     let body = req.body;
     let object = {
       title: body.title,
@@ -62,7 +56,7 @@ productsRouter
     succes?res.json({ response: "200 OK" }):res.status(200).send(respuesta);
   })
 
-  .put("/productos/actualizar/:id",auth, async(req, res) => {
+  .put("/productos/actualizar/:id", auth,async(req, res) => {
     let params = req.params;
     let body = req.body;
     let id = parseInt(params.id);
@@ -87,7 +81,7 @@ productsRouter
   })
 
 
-  .delete("/productos/borrar/:id",auth, async (req, res) => {
+  .delete("/productos/borrar/:id", auth, async (req, res) => {
     let params = req.params;
     let id = parseInt(params.id);
     let currentProd= await producto.find({id:id},{_id: 0, __v: 0})

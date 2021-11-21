@@ -3,32 +3,40 @@
 
 
 function getSignUp(req, res){
+   console.log(req.isAuthenticated())
    req.isAuthenticated()?
    res.redirect("/front.html"):
    res.redirect('/register.html');
 }
 
 function getFailLogin(req, res){
+   console.log(req.isAuthenticated())
    req.isAuthenticated()?
    res.redirect("/front.html"):
    res.redirect('/error-login.html');
 }
 
 function getFailSignUp(req, res){
+   console.log(req.isAuthenticated())
    req.isAuthenticated()?
    res.redirect("/front.html"):
    res.redirect('/error-signup.html');
 }
 
 function getLogin(req, res) {
-   if (req.isAuthenticated()){
-      let user = req.user;
-      console.log('Usuario logueado');
-      res.json(user);
-  } else {
-      console.log('Usuario no logueado');
-      res.redirect('/');
-  }
+   return req.isAuthenticated()
+   ? res.redirect("/")
+   :res.redirect("/login.html");
 }
 
-export{ getSignUp, getFailLogin, getFailSignUp, getLogin}
+function auth (req, res, next) {
+   if (!req.isAuthenticated() && req.originalUrl=="/api/productos/guardar"){
+      return res.status(403).send({})
+   }else if(req.isAuthenticated()){
+      return next() 
+   }else if(!req.isAuthenticated()){
+      return res.redirect("/login");
+   }
+}
+
+export{ getSignUp, getFailLogin, getFailSignUp, getLogin, auth}

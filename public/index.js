@@ -24,7 +24,7 @@ window.onload=()=>{
   })
   .catch((error)=>{
     if(error=="Error: 403"){
-      window.location.href='/'
+      window.location.href='/login'
     }
   })
 }
@@ -50,13 +50,13 @@ const logout=()=>{
         var myModal = new bootstrap.Modal(document.getElementById('myModal'))
         myModal.show()
         setTimeout(() => {
-          window.location.href='/' 
+          window.location.href='/login.html' 
         }, 2000);
       }
     })
     .catch((error)=>{
       if(error=="Error: 403"){
-        window.location.href='/'
+        window.location.href='/login.html'
       }
     })
   });

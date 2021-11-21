@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { usuarioC } from "../models/usuarios.js";
 
 export const sessionRouter = Router();
 
@@ -8,7 +7,11 @@ export const sessionRouter = Router();
 sessionRouter
 
 .get("/session", async (req, res) => {
-    res.json({user: usuarioC});
+    if(req.user){
+        res.json({user: req.user[0].username});
+    }else{
+        res.status(403).send({})
+    }
 })
 
 

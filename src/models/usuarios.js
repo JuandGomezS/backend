@@ -18,8 +18,15 @@ const usuario = mongoose.model(usuariosCollection, usuarioEsquema);
 
 
 const getUser= async(user)=>{
-    let usua = await usuario.find({username:user},{_id: 0, __v: 0});
-    return usua
+    
+    try {
+        let usua = await usuario.find({username:user},{_id: 0, __v: 0});
+        
+        return usua
+        
+    } catch (error) {
+        return null
+    }
 }
 
 function passwordOk(password, user) {
@@ -33,18 +40,19 @@ function createHash(password) {
 async function loginUser(req, username, password, done) {
     try {
         let usua = await getUser(username)
-        usuarioC=usua[0].username;
-        if (usua == undefined) {
-            return done(null, false, console.log(username, 'usuario no existe'));
+        if (usua.length==0) {
+            return done(null, false, {mensaje: 'Usuario o contraseña incorrectos'});
         } else {
             if (passwordOk(password,usua[0])){
                 return done(null, usua)  
             } else {
-                return done(null, false, console.log(username, 'password errónea'));
+                return done(null, false, {mensaje: 'Usuario o contraseña incorrectos'});
             }
         }
         
     } catch (error) {
+
+        console.log(error)
         return done(error);
     }
 }
@@ -82,14 +90,17 @@ function serializeUser(username, done) {
     }
 }
   
-async function deserializeUser(username, done) {
+async function deserializeUser(usua, done) {
+    let username = usua[0].username
     try {
-        const user = await getUser(username)
+        const user = await usuario.find({ username: username })
         return user ? done(null, user) : done(null, false);
     } catch (error) {
         return done(error);
     }
 }
+
+
 
 
 export {loginUser, signupUser, serializeUser, deserializeUser, usuarioC}

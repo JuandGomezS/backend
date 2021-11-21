@@ -6,13 +6,13 @@ import { connectDB } from "./src/dbConnect/connect.js"
 import { productsRouter , toSocketProd } from "./src/Routers/productos.router.js";
 import { sessionRouter} from "./src/Routers/session.router.js";
 import { getMessages , insertMessage } from "./src/models/mensajes.js"
-import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { loginUser, signupUser, serializeUser, deserializeUser} from "./src/models/usuarios.js";
 import { getSignUp, getFailLogin, getFailSignUp, getLogin } from "./src/utils/util.js";
+import { auth } from "./src/utils/util.js";
 //****************SETTINGS*******************
 const app = express();
 const http = createServer(app);
@@ -30,7 +30,6 @@ const server = http.listen(PORT, () => {
   console.log("Servidor HTTP escuchando en el puerto", server.address().port);
 });
 
-app.use(cookieParser());
 
 server.on("error", (error) => console.log("Error en servidor", error));
 
@@ -52,14 +51,23 @@ app.use(
   })
 );
 
-//******************ROUTER*******************
-app.use("/api", productsRouter);
-app.use("/api", sessionRouter);
+
+
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-const loginStrat= new LocalStrategy({passReqToCallback : true},loginUser);
+//******************ROUTER*******************
+app.use("/api", productsRouter);
+app.use("/api", sessionRouter);
+
+app.get('/', auth, (req,res)=>{
+  console.log("HOME")
+  res.redirect('/index.html')
+});
+
+const loginStrat= new LocalStrategy({passReqToCallback: true},loginUser);
 const sigupStrat = new LocalStrategy(signupUser);
 
 
@@ -81,14 +89,9 @@ app.get('/signup',getSignUp)
 //log in
 
 app.get("/login", getLogin)
-  .post("/login", passport.authenticate("login", { failureRedirect: "/login/error", successRedirect: "/front.html" }))
+  .post("/login", passport.authenticate("login", { failureRedirect: "/faillogin", successRedirect: "/" }))
   .get("/faillogin", getFailLogin);
 
-
-app.post('/logout',(req,res)=>{
-  req.logout();
-  res.redirect('/');
-});
 
 
 //****************HANDLEBARS*****************
@@ -129,3 +132,4 @@ io.on("connection", async (socket) => {
     io.sockets.emit("mensajes", mensajes);
   });
 });
+
