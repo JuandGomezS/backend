@@ -91,6 +91,7 @@ function serializeUser(username, done) {
 }
   
 async function deserializeUser(usua, done) {
+    console.log(usua)
     let username = usua[0].username
     try {
         const user = await usuario.find({ username: username })

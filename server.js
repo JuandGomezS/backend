@@ -40,8 +40,7 @@ app.use(
     resave: false,
     rolling: true,
     store: MongoStore.create({
-      // mongoUrl: "mongodb+srv://juanGomez:Juan.1604*@cluster0.dwkqc.mongodb.net/ecommerce?retryWrites=true&w=majority",
-      mongoUrl: 'mongodb://localhost:27017/ecommerce',
+      mongoUrl: "mongodb+srv://juanGomez:Juan.1604*@cluster0.dwkqc.mongodb.net/ecommerce?retryWrites=true&w=majority",
       mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 600,
     }),
@@ -82,7 +81,7 @@ passport.deserializeUser(deserializeUser);
 //Sign Up
 
 app.get('/signup',getSignUp)
-   .post("/signup", passport.authenticate("signup", { failureRedirect: "/failsignup", successRedirect: "/" }) )
+   .post("/signup", passport.authenticate("signup", { failureRedirect: "/failsignup", successRedirect: "/login" }) )
    .get('/failsignup', getFailSignUp);
 
 
