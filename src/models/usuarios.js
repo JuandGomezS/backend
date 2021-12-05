@@ -62,7 +62,6 @@ async function signupUser(username, password, done) {
     
     try {
         let usua = await getUser(username);
-        console.log(usua.length)
         if (usua.length>=1){
             return done(null, false, console.log(usua.username, 'Usuario ya existe'));
         } else {
@@ -91,8 +90,8 @@ function serializeUser(username, done) {
 }
   
 async function deserializeUser(usua, done) {
-    console.log(usua)
-    let username = usua[0].username
+    let username;
+    usua.length==undefined?username = usua.username:username = usua[0].username;
     try {
         const user = await usuario.find({ username: username })
         return user ? done(null, user) : done(null, false);
