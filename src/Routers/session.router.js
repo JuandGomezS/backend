@@ -8,7 +8,11 @@ sessionRouter
 
 .get("/session", async (req, res) => {
     if(req.user){
-        res.json({user: req.user[0].username});
+        res.json({
+            user: req.user[0].username,
+            email: req.user[0].email,
+            pic: req.user[0].picture
+        });
     }else{
         res.status(403).send({})
     }

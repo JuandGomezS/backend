@@ -3,23 +3,20 @@
 
 
 function getSignUp(req, res){
-   console.log(req.isAuthenticated())
    req.isAuthenticated()?
-   res.redirect("/front.html"):
+   res.redirect("/"):
    res.redirect('/register.html');
 }
 
 function getFailLogin(req, res){
-   console.log(req.isAuthenticated())
    req.isAuthenticated()?
-   res.redirect("/front.html"):
+   res.redirect("/"):
    res.redirect('/error-login.html');
 }
 
 function getFailSignUp(req, res){
-   console.log(req.isAuthenticated())
    req.isAuthenticated()?
-   res.redirect("/front.html"):
+   res.redirect("/"):
    res.redirect('/error-signup.html');
 }
 
@@ -30,6 +27,7 @@ function getLogin(req, res) {
 }
 
 function auth (req, res, next) {
+   console.log('auth')
    if (!req.isAuthenticated() && req.originalUrl=="/api/productos/guardar"){
       return res.status(403).send({})
    }else if(req.isAuthenticated()){

@@ -5,19 +5,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" 
+    rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/fbdfe9d794.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div>
-        <h1>Login</h1>
-        <form action="/login" method="post">
-            <label for="username">Usuario:</label>
-            <input type="text" id="username" name="username"><br><br>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br><br>
-            <input type="submit" value="Acceder">
-        </form>  
-        <br>
-        <a href="register.html">Registrarse</a>
+    <div class="d-flex justify-content-center align-items-center flex-column">
+        <h1>
+            Bienvenido!!
+        </h1>
+
+        <h3>Ingresa con facebook:</h3>
+        <a class="login" href="/auth/facebook"><i class="fab fa-facebook-square"></i></a>
     </div>    
 </body>
 </html>

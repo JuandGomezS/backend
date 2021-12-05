@@ -9,14 +9,13 @@ import { getMessages , insertMessage } from "./src/models/mensajes.js"
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import { loginUser, signupUser, serializeUser, deserializeUser} from "./src/models/usuarios.js";
-import { getSignUp, getFailLogin, getFailSignUp, getLogin } from "./src/utils/util.js";
-import { auth } from "./src/utils/util.js";
+import { Strategy as facebookStrategy } from "passport-facebook";
+import { serializeUser, deserializeUser, verifyUser} from "./src/models/usuarios.js";
+import {  getFailLogin,  getLogin } from "./src/utils/util.js";
+import {readFileSync} from 'fs';
+import  https from 'https';
 //****************SETTINGS*******************
 const app = express();
-const http = createServer(app);
-const io = new Server(http);
 
 connectDB();
 
@@ -24,14 +23,21 @@ app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-let PORT = 8080;
+let PORT = 8443;
 
-const server = http.listen(PORT, () => {
-  console.log("Servidor HTTP escuchando en el puerto", server.address().port);
-});
+const httpsOptions = {
+  key: readFileSync('./sslcert/cert.key'),
+  cert: readFileSync('./sslcert/cert.pem'),
+};
+const server = https.createServer(httpsOptions, app)
+.listen(PORT, () => {
+  console.log('Server corriendo en ' + 'https://localhost:8443')
+})
+const io = new Server(server);
 
 
 server.on("error", (error) => console.log("Error en servidor", error));
+
 
 app.use(
   session({
@@ -51,9 +57,6 @@ app.use(
 );
 
 
-
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -61,35 +64,32 @@ app.use(passport.session());
 app.use("/api", productsRouter);
 app.use("/api", sessionRouter);
 
-app.get('/', auth, (req,res)=>{
-  console.log("HOME")
-  res.redirect('/index.html')
-});
-
-const loginStrat= new LocalStrategy({passReqToCallback: true},loginUser);
-const sigupStrat = new LocalStrategy(signupUser);
-
-
-
-passport.use("login", loginStrat);
-passport.use("signup", sigupStrat);
+const facebookAuthentication = new facebookStrategy(
+  {
+    clientID: '4615605525198236',
+    clientSecret: '3aee948c48ba173fe05b8d14897424a7',
+    callbackURL: `https://localhost:${PORT}/auth/facebook/callback`,
+    profileFields: ["id", "displayName", "emails", "picture.type(large)"]
+  },
+  verifyUser
+);
 
 
 passport.serializeUser(serializeUser);
 passport.deserializeUser(deserializeUser);
+passport.use(facebookAuthentication);
 
-//Sign Up
-
-app.get('/signup',getSignUp)
-   .post("/signup", passport.authenticate("signup", { failureRedirect: "/failsignup", successRedirect: "/login" }) )
-   .get('/failsignup', getFailSignUp);
 
 
 //log in
 
-app.get("/login", getLogin)
-  .post("/login", passport.authenticate("login", { failureRedirect: "/faillogin", successRedirect: "/" }))
-  .get("/faillogin", getFailLogin);
+app
+  .get("/auth/facebook", passport.authenticate("facebook", { scope: ["email"] }))
+  .get("/auth/facebook/callback", passport.authenticate("facebook", { failureRedirect: "/auth/facebook/error", successRedirect: "/" }))
+  .get("/auth/facebook/error", getFailLogin)
+  .get("/login", getLogin)
+
+
 
 
 

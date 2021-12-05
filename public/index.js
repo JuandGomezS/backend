@@ -1,12 +1,18 @@
 let socket = io();
-let usuario;
 window.onload=()=>{
+  load();
+}
+
+let usuario;
+
+const load = ()=>{
   const options={
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     }
   }
+  console.log("holaaaaaaaaa")
   fetch("/api/session", options)
   .then((response) => {
     if (!response.ok) {
@@ -16,10 +22,15 @@ window.onload=()=>{
   })
   .then((result) => {
     let user = result.user;
+    let pic= result.pic;
+    let email=result.email;
     usuario=user;
-    const html=`<h1>BIENVENIDO ${user}</h1>
-    <button id="logout">LOGOUT</button>`
-    document.getElementById("welcome").innerHTML = html;
+    const htmlpic=`<img src=${pic} alt="profile image">`;
+    document.getElementById("pic").innerHTML = htmlpic;
+    const html=`<h1>${user}</h1>
+    <h5>${email}</h5>
+    <button id="logout">LOGOUT</button>`;
+    document.getElementById("details").innerHTML = html;
     logout()
   })
   .catch((error)=>{
@@ -28,6 +39,7 @@ window.onload=()=>{
     }
   })
 }
+
 const logout=()=>{
   let salir = document.getElementById("logout");
   salir.addEventListener("click", (event) => {
