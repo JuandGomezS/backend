@@ -1,6 +1,7 @@
 
 
 
+import {fork} from 'child_process';
 
 function getSignUp(req, res){
    req.isAuthenticated()?
@@ -35,5 +36,8 @@ function auth (req, res, next) {
       return res.redirect("/login");
    }
 }
+
+
+
 
 export{ getSignUp, getFailLogin, getFailSignUp, getLogin, auth}

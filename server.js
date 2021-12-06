@@ -12,9 +12,10 @@ import MongoStore from "connect-mongo";
 import passport from "passport";
 import { Strategy as facebookStrategy } from "passport-facebook";
 import { serializeUser, deserializeUser, verifyUser} from "./src/models/usuarios.js";
-import {  getFailLogin,  getLogin } from "./src/utils/util.js";
+import {  getFailLogin,  getLogin} from "./src/utils/util.js";
 import {readFileSync} from 'fs';
 import  https from 'https';
+import {fork} from 'child_process';
 
 //****************SETTINGS*******************
 const app = express();
@@ -96,18 +97,24 @@ app
 app.get("/info", (req,res)=>{
   const data={
     args: JSON.stringify(process.argv.slice(2)),
-    os: process.platform,
-    node: process.version,
-    memoryUsed: process.memoryUsage().heapUsed,
-    execPath: process.execPath,
+    Sistema_operativo: process.platform,
+    Versión_node: process.version,
+    Memoria_usada: process.memoryUsage().heapUsed,
+    Path_de_ejecución: process.execPath,
     processID: process.pid,
     folder: process.cwd(),
   }
   res.json(data)
 })
 
-
-
+app.get("/randoms", (req, res) =>{
+  
+  /* const cant = req.query.cant ? Number(req.query.cant) : 100000000; */
+  const computo = fork('./computo.js');
+  computo.send('start');
+  computo.on('message', sum=>res.end(`La suma es ${sum}`));
+  console.log('Es no bloqueante!');
+})
 
 
 //****************HANDLEBARS*****************
