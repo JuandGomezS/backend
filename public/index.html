@@ -32,19 +32,24 @@
             </div>
           </div>
     </div>
-    <h2>THIS IS THE WAY!</h2>
-    <form id= "formulario" novalidate>
-        <fieldset>
-            <legend>Product:</legend>
-            Title: <input name="title" id="title" type="text" required>
-            Price: <input name="price" id="price" type="number" required>
-            Thumbnail: <input name="thumbnail" id="thumbnail" type="text" required>
-        </fieldset>    
-        <input type="submit" value="Guardar Producto" class="enviar">
-    </form>
-
+    
+    <h2>INGRESAR PRODUCTOS</h2>
+    <div class="d-flex justify-content-around">
+      
+      <form id= "formulario" novalidate>
+          <fieldset>
+              <legend>Producto:</legend>
+              Titulo: <input name="title" id="title" type="text" required>
+              Precio: <input name="price" id="price" type="number" required>
+              Imagen: <input name="thumbnail" id="thumbnail" type="text" required>
+          </fieldset>    
+          <input type="submit" value="Guardar Producto" class="enviar">
+      </form>
+    </div>
+    <hr style="border: 2px solid black;">
     <!-- WS tabla de productos -->
-    <div id="tablaProductos">
+    <div id="tablaProductos" >
+        <h2>PRODUCTOS</h2>
         <table class="table">
             <thead>
               <tr>
@@ -57,12 +62,14 @@
             <tbody id="tbody"></tbody>
           </table>
     </div>
-
+    <hr style="border: 2px solid black;">
     <!-- CHAT -->
     <div id="chat" style="margin-left: 1rem;">
+        <h2>CHAT</h2>
+        <label for="usuario">Ingresa tu correo:</label>
         <input type="email" id="usuario" placeholder="Ingrese su correo" required/>
     </div>
-    <br/>
+    <br>
     <div id="mensajes"></div>
     <br/>
     <form onsubmit="return enviarMensaje(this)">

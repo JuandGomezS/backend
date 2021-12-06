@@ -27,7 +27,6 @@ function getLogin(req, res) {
 }
 
 function auth (req, res, next) {
-   console.log('auth')
    if (!req.isAuthenticated() && req.originalUrl=="/api/productos/guardar"){
       return res.status(403).send({})
    }else if(req.isAuthenticated()){

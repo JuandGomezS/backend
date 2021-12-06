@@ -1,8 +1,9 @@
+import dotenv from 'dotenv'
+dotenv.config({ path: './config/.env' })
 import express from "express";
 import handlebars from "express-handlebars";
-import { createServer } from "http";
 import { Server } from "socket.io";
-import { connectDB } from "./src/dbConnect/connect.js"
+import mongoose from "mongoose";
 import { productsRouter , toSocketProd } from "./src/Routers/productos.router.js";
 import { sessionRouter} from "./src/Routers/session.router.js";
 import { getMessages , insertMessage } from "./src/models/mensajes.js"
@@ -14,16 +15,17 @@ import { serializeUser, deserializeUser, verifyUser} from "./src/models/usuarios
 import {  getFailLogin,  getLogin } from "./src/utils/util.js";
 import {readFileSync} from 'fs';
 import  https from 'https';
+
 //****************SETTINGS*******************
 const app = express();
+let PORT = process.argv.slice(2)[0] || process.env.PORT;
 
-connectDB();
+await mongoose.connect(process.env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+console.log("Conectado a la base de datos de Mongo...");
 
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-let PORT = 8443;
 
 const httpsOptions = {
   key: readFileSync('./sslcert/cert.key'),
@@ -31,8 +33,10 @@ const httpsOptions = {
 };
 const server = https.createServer(httpsOptions, app)
 .listen(PORT, () => {
-  console.log('Server corriendo en ' + 'https://localhost:8443')
+  console.log(`Server corriendo en https://localhost:${PORT}`)
 })
+
+
 const io = new Server(server);
 
 
@@ -46,7 +50,7 @@ app.use(
     resave: false,
     rolling: true,
     store: MongoStore.create({
-      mongoUrl: "mongodb+srv://juanGomez:Juan.1604*@cluster0.dwkqc.mongodb.net/ecommerce?retryWrites=true&w=majority",
+      mongoUrl: process.env.DB_URL,
       mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 600,
     }),
@@ -66,8 +70,8 @@ app.use("/api", sessionRouter);
 
 const facebookAuthentication = new facebookStrategy(
   {
-    clientID: '4615605525198236',
-    clientSecret: '3aee948c48ba173fe05b8d14897424a7',
+    clientID: process.argv.slice(2)[1]||process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.argv.slice(2)[2]||process.env.FACEBOOK_CLIENT_SECRET,
     callbackURL: `https://localhost:${PORT}/auth/facebook/callback`,
     profileFields: ["id", "displayName", "emails", "picture.type(large)"]
   },
@@ -88,6 +92,19 @@ app
   .get("/auth/facebook/callback", passport.authenticate("facebook", { failureRedirect: "/auth/facebook/error", successRedirect: "/" }))
   .get("/auth/facebook/error", getFailLogin)
   .get("/login", getLogin)
+
+app.get("/info", (req,res)=>{
+  const data={
+    args: JSON.stringify(process.argv.slice(2)),
+    os: process.platform,
+    node: process.version,
+    memoryUsed: process.memoryUsage().heapUsed,
+    execPath: process.execPath,
+    processID: process.pid,
+    folder: process.cwd(),
+  }
+  res.json(data)
+})
 
 
 
