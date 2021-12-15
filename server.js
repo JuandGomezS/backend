@@ -68,6 +68,8 @@ app.use(passport.session());
 app.use("/api", productsRouter);
 app.use("/api", sessionRouter);
 
+
+
 const facebookAuthentication = new facebookStrategy(
   {
     clientID: process.argv.slice(2)[1]||process.env.FACEBOOK_CLIENT_ID,

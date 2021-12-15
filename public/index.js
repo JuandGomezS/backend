@@ -141,6 +141,8 @@ let render = (data) => {
   document.getElementById("tbody").innerHTML = html;
 };
 
+
+
 socket.on("mensajes", (data) => {
   renderChat(data);
 });
